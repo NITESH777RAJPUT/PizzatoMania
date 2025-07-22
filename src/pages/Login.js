@@ -91,13 +91,15 @@ const Login = ({ setToken, setAdminToken }) => {
               required
             />
             <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
-              onChange={handleChange}
-              required
-            />
+  type="password"
+  name="password"
+  placeholder="Password"
+  autoComplete="current-password"
+  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+  onChange={handleChange}
+  required
+/>
+
             <button
               type="submit"
               className="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition"

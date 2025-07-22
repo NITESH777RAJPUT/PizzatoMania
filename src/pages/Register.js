@@ -92,13 +92,15 @@ const Register = () => {
               required
             />
             <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 border rounded-lg bg-white text-black placeholder-gray-500"
-              onChange={handleChange}
-              required
-            />
+  type="password"
+  name="password"
+  placeholder="Password"
+  className="w-full px-4 py-2 border rounded-lg bg-white text-black placeholder-gray-500"
+  onChange={handleChange}
+  required
+  autocomplete="new-password"
+/>
+
             <button
               type="submit"
               className="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition"
