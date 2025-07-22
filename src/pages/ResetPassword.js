@@ -11,7 +11,7 @@ const ResetPassword = () => {
   const handleReset = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`https://pizzamania-psh4.onrender.com/api/auth/reset-password/${token}`, { password });
+      const res = await axios.post(`https://pizzamania-0igb.onrender.com/api/auth/reset-password/${token}`, { password });
       setMsg('✅ ' + res.data.message);
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {

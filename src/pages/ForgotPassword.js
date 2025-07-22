@@ -10,7 +10,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('https://pizzamania-psh4.onrender.com/api/auth/forgot-password', { email });
+      const res = await axios.post('https://pizzamania-0igb.onrender.com/api/auth/forgot-password', { email });
       setMessage(res.data.message || 'Reset link sent successfully!');
     } catch (err) {
       setMessage(err.response?.data?.message || 'Failed to send reset link. Please try again.');

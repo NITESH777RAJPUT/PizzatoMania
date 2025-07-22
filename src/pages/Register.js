@@ -19,8 +19,8 @@ const Register = () => {
     e.preventDefault();
     const apiUrl =
       userType === 'admin'
-        ? 'https://pizzamania-psh4.onrender.com/api/admin/register'
-        : 'https://pizzamania-psh4.onrender.com/api/auth/register';
+        ? 'https://pizzamania-0igb.onrender.com/admin/register'
+        : 'https://pizzamania-0igb.onrender.com/api/auth/register';
 
     try {
       await axios.post(apiUrl, formData);

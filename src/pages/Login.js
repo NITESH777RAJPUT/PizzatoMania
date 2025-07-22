@@ -15,8 +15,8 @@ const Login = ({ setToken, setAdminToken }) => {
     e.preventDefault();
     const apiUrl =
       userType === 'admin'
-        ? 'https://pizzamania-psh4.onrender.com/api/admin/login'
-        : 'https://pizzamania-psh4.onrender.com/api/auth/login';
+        ? 'https://pizzamania-0igb.onrender.com/api/admin/login'
+        : 'https://pizzamania-0igb.onrender.com/api/auth/login';
 
     try {
       const res = await axios.post(apiUrl, formData);

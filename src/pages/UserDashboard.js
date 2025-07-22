@@ -271,7 +271,7 @@ const UserDashboard = ({ setToken }) => {
   // --- API Calls and Logic ---
   useEffect(() => {
     // ... (Saara existing useEffect code for fetching varieties, profile, cart)
-    const API_URL = process.env.REACT_APP_API_URL || 'https://pizzamania-psh4.onrender.com';
+    const API_URL = process.env.REACT_APP_API_URL || 'https://pizzamania-0igb.onrender.com';
     const fetchVarieties = async () => {
       setIsLoading(true);
       try {
@@ -354,7 +354,7 @@ const UserDashboard = ({ setToken }) => {
     if (!email || !token) { alert('Please log in to view your orders.'); return; }
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://pizzamania-psh4.onrender.com/api/orders/${email}`, { headers: { Authorization: `Bearer ${token}` } });
+      const response = await axios.get(`https://pizzamania-0igb.onrender.com/api/orders/${email}`, { headers: { Authorization: `Bearer ${token}` } });
       setOrders(response.data || []);
       setStep(4);
     } catch (error) { console.error('Error fetching orders:', error); alert('Failed to load orders. Please try again.'); } 
@@ -366,7 +366,7 @@ const UserDashboard = ({ setToken }) => {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const response = await axios.get(`https://pizzamania-psh4.onrender.com/api/orders/status/${orderId}`, {
+      const response = await axios.get(`https://pizzamania-0igb.onrender.com/api/orders/status/${orderId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTrackingOrder(response.data); // Update tracking order state
@@ -385,14 +385,14 @@ const UserDashboard = ({ setToken }) => {
     if (!validateAddress()) return;
     setIsLoading(true);
     try {
-      const response = await axios.post('https://pizzamania-psh4.onrender.com/api/orders/create-order', { amount: totalPrice });
+      const response = await axios.post('https://pizzamania-0igb.onrender.com/api/orders/create-order', { amount: totalPrice });
 
       const { id: order_id, amount } = response.data;
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_etV3KSpnoWM3Av', amount: amount * 100, currency: 'INR', name: 'Pizza Mania', description: 'Pizza Order', order_id: order_id,
         handler: async function (paymentResponse) {
           try {
-            const res = await axios.post('https://pizzamania-psh4.onrender.com/api/orders/confirm-payment', {
+            const res = await axios.post('https://pizzamania-0igb.onrender.com/api/orders/confirm-payment', {
                 order_id,
                 payment_id: paymentResponse.razorpay_payment_id,
                 userEmail: localStorage.getItem('userEmail') || 'guest@example.com',
@@ -430,7 +430,7 @@ const UserDashboard = ({ setToken }) => {
     if (!address.name || !address.phone || !address.street || !address.city || !address.pincode) { alert('Please fill all address fields.'); return; }
     setIsLoading(true);
     try {
-      await axios.post(`https://pizzamania-psh4.onrender.com/api/profile/${email}/address`, { address });
+      await axios.post(`https://pizzamania-0igb.onrender.com/api/profile/${email}/address`, { address });
       setUserProfile((prev) => ({ ...prev, address }));
       alert('Address saved successfully!');
       setStep(0);
@@ -448,7 +448,7 @@ const UserDashboard = ({ setToken }) => {
     if (!token) { alert('Please log in to add items to cart.'); return; }
     setIsLoading(true);
     try {
-      const response = await axios.post('https://pizzamania-psh4.onrender.com/api/cart/add', { pizzaName: pizza.name, price: pizza.price * priceList.size[size], quantity, size, image: pizza.image, }, { headers: { Authorization: `Bearer ${token}` } });
+      const response = await axios.post('https://pizzamania-0igb.onrender.com/api/cart/add', { pizzaName: pizza.name, price: pizza.price * priceList.size[size], quantity, size, image: pizza.image, }, { headers: { Authorization: `Bearer ${token}` } });
       setCart(response.data.items || []);
       alert(`${pizza.name} added to cart!`);
       setShowAddToCartPopup(false);
@@ -472,7 +472,7 @@ const UserDashboard = ({ setToken }) => {
         return;
     }
     try {
-      const response = await axios.put('https://pizzamania-psh4.onrender.com/api/cart/update', { pizzaName, size, quantity: newQuantity }, { headers: { Authorization: `Bearer ${token}` } });
+      const response = await axios.put('https://pizzamania-0igb.onrender.com/api/cart/update', { pizzaName, size, quantity: newQuantity }, { headers: { Authorization: `Bearer ${token}` } });
       setCart(response.data.items || []);
     } catch (error) {
       console.error('Error updating cart quantity:', error);
@@ -485,7 +485,7 @@ const UserDashboard = ({ setToken }) => {
     if (!token) { alert('Please log in to remove items from cart.'); return; }
     setIsLoading(true);
     try {
-      const response = await axios.delete('https://pizzamania-psh4.onrender.com/api/cart/remove', { headers: { Authorization: `Bearer ${token}` }, data: { pizzaName, size }, });
+      const response = await axios.delete('https://pizzamania-0igb.onrender.com/api/cart/remove', { headers: { Authorization: `Bearer ${token}` }, data: { pizzaName, size }, });
       setCart(response.data.items || []);
       alert(`${pizzaName} removed from cart!`);
     } catch (error) {
@@ -501,7 +501,7 @@ const UserDashboard = ({ setToken }) => {
     if (!token) { alert('Please log in to clear cart.'); return; }
     setIsLoading(true);
     try {
-      const response = await axios.delete('https://pizzamania-psh4.onrender.com/api/cart/clear', { headers: { Authorization: `Bearer ${token}` }, });
+      const response = await axios.delete('https://pizzamania-0igb.onrender.com/api/cart/clear', { headers: { Authorization: `Bearer ${token}` }, });
       setCart(response.data.items || []);
       alert('Cart cleared successfully!');
     } catch (error) {
@@ -554,7 +554,7 @@ const UserDashboard = ({ setToken }) => {
       // Add each item from the past order to the current cart
       for (const item of order.pizza_details.cartItems) {
         await axios.post(
-          'https://pizzamania-psh4.onrender.com/api/cart/add',
+          'https://pizzamania-0igb.onrender.com/api/cart/add',
           {
             pizzaName: item.pizzaName,
             price: item.price,
@@ -566,7 +566,7 @@ const UserDashboard = ({ setToken }) => {
         );
       }
       // Fetch the updated cart
-      const response = await axios.get('https://pizzamania-psh4.onrender.com/api/cart', {
+      const response = await axios.get('https://pizzamania-0igb.onrender.com/api/cart', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCart(response.data.items || []);

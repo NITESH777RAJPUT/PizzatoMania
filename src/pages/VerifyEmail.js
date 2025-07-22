@@ -9,7 +9,7 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verify = async () => {
       try {
-        await axios.get(`https://pizzamania-psh4.onrender.com/api/auth/verify/${token}`);
+        await axios.get(`https://pizzamania-0igb.onrender.com/api/auth/verify/${token}`);
         setStatus('✅ Email verified successfully!');
       } catch (err) {
         setStatus('❌ Invalid or expired token.');

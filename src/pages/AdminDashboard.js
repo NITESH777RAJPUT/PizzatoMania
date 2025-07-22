@@ -25,7 +25,7 @@ const AdminDashboard = ({ setAdminToken }) => {
   // Wrapped data fetching functions in useCallback
   const fetchInventory = useCallback(async () => {
     try {
-      const res = await axios.get('https://pizzamania-psh4.onrender.com/api/inventory');
+      const res = await axios.get('https://pizzamania-0igb.onrender.com/api/inventory');
       setInventory(res.data);
       checkStockLevels(res.data);
     } catch (error) {
@@ -36,7 +36,7 @@ const AdminDashboard = ({ setAdminToken }) => {
 
   const fetchPizzas = useCallback(async () => {
     try {
-      const res = await axios.get('https://pizzamania-psh4.onrender.com/api/pizzas');
+      const res = await axios.get('https://pizzamania-0igb.onrender.com/api/pizzas');
       setPizzas(res.data || []);
     } catch (error) {
       console.error('Failed to fetch pizzas:', error);
@@ -46,7 +46,7 @@ const AdminDashboard = ({ setAdminToken }) => {
 
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await axios.get('https://pizzamania-psh4.onrender.com/api/orders/admin/orders');
+      const res = await axios.get('https://pizzamania-0igb.onrender.com/api/orders/admin/orders');
       const modifiedOrders = res.data.map(order => ({ ...order, newStatus: order.status }));
       setOrders(modifiedOrders);
     } catch (error) {
@@ -75,7 +75,7 @@ const AdminDashboard = ({ setAdminToken }) => {
       return alert('Please enter a valid item name and quantity.');
     }
     try {
-      const res = await axios.post('https://pizzamania-psh4.onrender.com/api/inventory/add', {
+      const res = await axios.post('https://pizzamania-0igb.onrender.com/api/inventory/add', {
         category: newItem.category,
         name: newItem.name.trim(),
         quantity: parseInt(newItem.quantity) || 0,
@@ -94,7 +94,7 @@ const AdminDashboard = ({ setAdminToken }) => {
   const handleDeleteItem = async (category, itemName) => {
     if (!window.confirm(`Are you sure you want to delete "${itemName}" from ${category}?`)) return;
     try {
-      const res = await axios.delete('https://pizzamania-psh4.onrender.com/api/inventory/delete', {
+      const res = await axios.delete('https://pizzamania-0igb.onrender.com/api/inventory/delete', {
         data: { category, name: itemName }
       });
       setInventory(res.data);
@@ -109,7 +109,7 @@ const AdminDashboard = ({ setAdminToken }) => {
 
   const handleQuantityChange = async (category, itemName, change) => {
     try {
-      const res = await axios.put('https://pizzamania-psh4.onrender.com/api/inventory/update-quantity', {
+      const res = await axios.put('https://pizzamania-0igb.onrender.com/api/inventory/update-quantity', {
         category, itemName, change,
       });
       setInventory(res.data);
@@ -126,7 +126,7 @@ const AdminDashboard = ({ setAdminToken }) => {
       return alert('Please fill all pizza fields.');
     }
     try {
-      const res = await axios.post('https://pizzamania-psh4.onrender.com/api/pizzas/add', {
+      const res = await axios.post('https://pizzamania-0igb.onrender.com/api/pizzas/add', {
         ...newPizza,
         price: parseFloat(newPizza.price) || 0,
         rating: parseFloat(newPizza.rating) || 0,
@@ -146,7 +146,7 @@ const AdminDashboard = ({ setAdminToken }) => {
       return alert('Please fill all fields for editing pizza.');
     }
     try {
-      const res = await axios.put('https://pizzamania-psh4.onrender.com/api/pizzas/edit', {
+      const res = await axios.put('https://pizzamania-0igb.onrender.com/api/pizzas/edit', {
         originalName: editPizza.originalName,
         updatedPizza: {
           ...editPizza,
@@ -167,7 +167,7 @@ const AdminDashboard = ({ setAdminToken }) => {
   const handleDeletePizza = async (name) => {
     if (!window.confirm(`Are you sure you want to delete ${name}?`)) return;
     try {
-      const res = await axios.delete('https://pizzamania-psh4.onrender.com/api/pizzas/delete', {
+      const res = await axios.delete('https://pizzamania-0igb.onrender.com/api/pizzas/delete', {
         data: { name },
       });
       setPizzas(res.data || []);
@@ -180,7 +180,7 @@ const AdminDashboard = ({ setAdminToken }) => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.put(`https://pizzamania-psh4.onrender.com/api/orders/admin/orders/${orderId}/status`, {
+      await axios.put(`https://pizzamania-0igb.onrender.com/api/orders/admin/orders/${orderId}/status`, {
         status: newStatus,
       });
       const updatedOrders = orders.map(order =>

@@ -13,7 +13,7 @@ const LiveTrackerPage = () => {
     const fetchOrder = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`https://pizzamania-psh4.onrender.com/api/orders/status/${orderId}`, {
+        const res = await axios.get(`https://pizzamania-0igb.onrender.com/api/orders/status/${orderId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

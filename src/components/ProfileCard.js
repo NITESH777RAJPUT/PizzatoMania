@@ -31,7 +31,7 @@ const ProfileCard = ({ name: initialName, photo: initialPhoto, email, onUpdate, 
 
   const handleSave = async () => {
     try {
-      const res = await axios.put(`https://pizzamania-psh4.onrender.com/api/profile/${email}`, {
+      const res = await axios.put(`https://pizzamania-0igb.onrender.com/api/profile/${email}`, {
         name,
         photo
       });

@@ -10,7 +10,7 @@ const STATUS_CONFIG = {
 };
 
 // API constants for better code management
-const API_BASE_URL = 'https://pizzamania-psh4.onrender.com/api/orders';
+const API_BASE_URL = 'https://pizzamania-0igb.onrender.com/api/orders';
 const POLLING_INTERVAL = 30000; // 30 seconds
 
 /**
