@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const backendURL = process.env.REACT_APP_BACKEND_URL;
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://pizzamania-0igb.onrender.com';
 
 const ProfileCard = ({ name: initialName, photo: initialPhoto, email, onUpdate, theme }) => {
   const [name, setName] = useState(initialName || '');
