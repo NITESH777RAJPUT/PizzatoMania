@@ -888,10 +888,44 @@ const UserDashboard = ({ setToken }) => {
                         {/* Cart Summary */}
                         <CartSummary cart={cart} onViewCart={handleViewCart} theme={theme} />
                         {/* User Profile / Edit Profile */}
-                        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setEditMode(true)}>
-                            <img src={userProfile.photo} alt="User profile" className="w-10 h-10 rounded-full border-2 border-teal-500 shadow-sm" />
-                            <div className="hidden md:block"><p className={`font-semibold text-sm truncate ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{userProfile.name}</p><p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Edit Profile</p></div>
-                        </div>
+                        <div
+  className="flex items-center gap-3 cursor-pointer"
+  onClick={() => setEditMode(true)}
+>
+  {userProfile?.photo ? (
+    <img
+      src={
+        userProfile.photo.startsWith('http')
+          ? userProfile.photo
+          : `https://pizzamania-0igb.onrender.com/uploads/${userProfile.photo}`
+      }
+      alt="User profile"
+      className="w-10 h-10 rounded-full border-2 border-teal-500 shadow-sm object-cover"
+    />
+  ) : (
+    <div className="w-10 h-10 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold shadow-sm border-2 border-teal-500">
+      {userProfile?.name?.charAt(0).toUpperCase() || 'U'}
+    </div>
+  )}
+
+  <div className="hidden md:block">
+    <p
+      className={`font-semibold text-sm truncate ${
+        theme === 'dark' ? 'text-white' : 'text-gray-900'
+      }`}
+    >
+      {userProfile?.name || 'User'}
+    </p>
+    <p
+      className={`text-xs ${
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+      }`}
+    >
+      Edit Profile
+    </p>
+  </div>
+</div>
+
                     </div>
                 </header>
 
