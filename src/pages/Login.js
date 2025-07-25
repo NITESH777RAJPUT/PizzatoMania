@@ -1,6 +1,9 @@
+// 📁 src/pages/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = ({ setToken, setAdminToken }) => {
   const navigate = useNavigate();
@@ -42,9 +45,33 @@ const Login = ({ setToken, setAdminToken }) => {
     }
   };
 
+  // 🔥 Google Login Handler
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      console.log("Google user:", decoded);
+
+      const res = await axios.post('https://pizzamania-0igb.onrender.com/api/auth/google-login', {
+        email: decoded.email,
+        name: decoded.name,
+        picture: decoded.picture,
+      });
+
+      const { token, user } = res.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('userEmail', user.email);
+      localStorage.setItem('userName', user.name);
+      localStorage.setItem('userPhoto', user.picture);
+      setToken(token);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error("Google login failed", err);
+      alert("Google login failed");
+    }
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* 🍕 Background Pizza Video */}
       <video autoPlay muted loop className="absolute top-0 left-0 w-full h-full object-cover z-[-1]">
         <source src="/videos/pizza-bg.mp4" type="video/mp4" />
         Your browser does not support the video tag.
@@ -91,15 +118,13 @@ const Login = ({ setToken, setAdminToken }) => {
               required
             />
             <input
-  type="password"
-  name="password"
-  placeholder="Password"
-  autoComplete="current-password"
-  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
-  onChange={handleChange}
-  required
-/>
-
+              type="password"
+              name="password"
+              placeholder="Password"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+              onChange={handleChange}
+              required
+            />
             <button
               type="submit"
               className="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition"
@@ -107,6 +132,15 @@ const Login = ({ setToken, setAdminToken }) => {
               Login
             </button>
           </form>
+
+          <div className="mt-6 flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.log("Google login failed");
+              }}
+            />
+          </div>
 
           <p className="mt-4 text-center text-sm text-gray-800 font-medium">
             Don’t have an account?{' '}

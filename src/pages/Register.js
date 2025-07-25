@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
-const Register = () => {
+const Register = ({ setToken }) => {
   const navigate = useNavigate();
   const [userType, setUserType] = useState('user');
   const [formData, setFormData] = useState({
@@ -19,25 +21,49 @@ const Register = () => {
     e.preventDefault();
     const apiUrl =
       userType === 'admin'
-        ? 'https://pizzamania-0igb.onrender.com/admin/register'
+        ? 'https://pizzamania-0igb.onrender.com/api/admin/register'
         : 'https://pizzamania-0igb.onrender.com/api/auth/register';
 
     try {
       await axios.post(apiUrl, formData);
       if (userType === 'admin') {
         alert('Admin registered successfully. Now please login.');
+        navigate('/login');
       } else {
         alert('User registered. Check your email to verify before login.');
+        navigate('/login');
       }
-      navigate('/login');
     } catch (err) {
       alert('Registration failed: ' + (err.response?.data?.message || err.message));
     }
   };
 
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      const res = await axios.post('https://pizzamania-0igb.onrender.com/api/auth/google-login', {
+        email: decoded.email,
+        name: decoded.name,
+        picture: decoded.picture,
+      });
+
+      const { token, user } = res.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('userEmail', user.email);
+      localStorage.setItem('userName', user.name);
+      localStorage.setItem('userPhoto', user.picture);
+      if (typeof setToken === 'function') {
+        setToken(token);
+      }
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Google register failed', err);
+      alert('Google register failed');
+    }
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* 🍕 Background Pizza Video */}
       <video autoPlay muted loop className="absolute top-0 left-0 w-full h-full object-cover z-[-1]">
         <source src="/videos/pizza-bg.mp4" type="video/mp4" />
         Your browser does not support the video tag.
@@ -92,15 +118,13 @@ const Register = () => {
               required
             />
             <input
-  type="password"
-  name="password"
-  placeholder="Password"
-  className="w-full px-4 py-2 border rounded-lg bg-white text-black placeholder-gray-500"
-  onChange={handleChange}
-  required
-  autocomplete="new-password"
-/>
-
+              type="password"
+              name="password"
+              placeholder="Password"
+              className="w-full px-4 py-2 border rounded-lg bg-white text-black placeholder-gray-500"
+              onChange={handleChange}
+              required
+            />
             <button
               type="submit"
               className="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition"
@@ -108,6 +132,17 @@ const Register = () => {
               Register
             </button>
           </form>
+
+          <p className="text-center text-gray-700 font-medium mt-4">or register using Google</p>
+
+          <div className="mt-4 flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.log('Google login failed');
+              }}
+            />
+          </div>
 
           <p className="mt-4 text-center text-sm text-gray-800 font-medium">
             Already registered?{' '}

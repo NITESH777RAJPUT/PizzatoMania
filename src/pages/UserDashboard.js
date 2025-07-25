@@ -223,6 +223,150 @@ const AddToCartPopup = ({ pizza, onConfirm, onCancel, theme }) => {
   );
 };
 
+// ✨ NEW: FeedbackPopup component
+const FeedbackPopup = ({ order, onClose, onSubmit, theme }) => {
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState('');
+
+    const handleSubmit = () => {
+        if (rating === 0) {
+            alert('Please provide a star rating.');
+            return;
+        }
+        onSubmit(order.order_id, rating, comment);
+        onClose();
+    };
+
+    return (
+        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in`}>
+            <div className={`p-6 rounded-2xl shadow-2xl max-w-sm w-full m-4 ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h3 className={`text-xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Rate Your Order</h3>
+                        <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Order ID: <span className="font-mono text-xs">{order.order_id}</span></p>
+                    </div>
+                    <button onClick={onClose} className={`p-1 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`} aria-label="Close feedback form">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div className="space-y-4">
+                    <div>
+                        <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Overall Rating</label>
+                        <div className="flex items-center gap-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <svg
+                                    key={star}
+                                    className={`w-8 h-8 cursor-pointer ${
+                                        star <= rating ? 'text-yellow-400' : (theme === 'dark' ? 'text-gray-600' : 'text-gray-300')
+                                    }`}
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                    onClick={() => setRating(star)}
+                                >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <label htmlFor="feedback-comment" className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Comments (Optional)</label>
+                        <textarea
+                            id="feedback-comment"
+                            rows="4"
+                            className={`w-full p-3 rounded-lg border-2 focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all duration-300 ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-gray-800 border-gray-200'}`}
+                            placeholder="Share your experience..."
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                        <MenuButton onClick={onClose} variant="secondary" className="w-full" ariaLabel="Cancel feedback">Cancel</MenuButton>
+                        <MenuButton onClick={handleSubmit} className="w-full" ariaLabel="Submit feedback">Submit Feedback</MenuButton>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ✨ NEW: OrderDetailsPopup component
+const OrderDetailsPopup = ({ order, onClose, onCancelOrder, theme }) => {
+    if (!order) return null;
+
+    const isCancellable = order.status === 'Pending' || order.status === 'Preparing';
+
+    return (
+        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in`}>
+            <div className={`p-6 rounded-2xl shadow-2xl max-w-lg w-full m-4 ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                <div className="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Order Details</h3>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Order ID: <span className="font-mono text-xs">{order.order_id}</span></p>
+                    </div>
+                    <button onClick={onClose} className={`p-1 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`} aria-label="Close order details">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+
+                <div className="space-y-4 mb-6">
+                    <div>
+                        <p className={`font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Items:</p>
+                        <ul className="list-disc list-inside ml-2 text-sm">
+                            {order.pizza_details.cartItems ? (
+                                order.pizza_details.cartItems.map((item, index) => (
+                                    <li key={index} className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        {item.pizzaName} ({item.size}, Qty: {item.quantity}) - ₹{(item.price * item.quantity).toFixed(2)}
+                                    </li>
+                                ))
+                            ) : (
+                                <li className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    Custom Pizza: {order.pizza_details.selectedBase}, {order.pizza_details.selectedSauce}, {order.pizza_details.selectedCheese}, {order.pizza_details.selectedVeggies?.join(', ') || 'No veggies'} (Size: {order.pizza_details.size}, Qty: {order.pizza_details.quantity})
+                                </li>
+                            )}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p className={`font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Delivery Address:</p>
+                        <p className={`text-sm ml-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {order.address.name}, {order.address.phone}<br/>
+                            {order.address.street}, {order.address.city}, {order.address.pincode}
+                        </p>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <p className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Total Amount:</p>
+                        <p className="text-teal-500 font-bold text-xl">₹{order.totalPrice.toFixed(2)}</p>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <p className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Status:</p>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${order.status === 'Pending' || order.status === 'Preparing' ? (theme === 'dark' ? 'bg-yellow-900 text-yellow-300' : 'bg-yellow-100 text-yellow-800') : order.status === 'Out for Delivery' ? (theme === 'dark' ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800') : (theme === 'dark' ? 'bg-teal-900 text-teal-300' : 'bg-teal-100 text-teal-800')}`}>{order.status}</span>
+                    </div>
+                    
+                    {order.feedback && (
+                        <div>
+                            <p className={`font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Your Feedback:</p>
+                            <div className="ml-2">
+                                <StarRating rating={order.feedback.rating} theme={theme} />
+                                {order.feedback.comment && <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>"{order.feedback.comment}"</p>}
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                    {isCancellable && (
+                        <MenuButton onClick={() => onCancelOrder(order.order_id)} variant="danger" className="w-full" ariaLabel="Cancel order">Cancel Order</MenuButton>
+                    )}
+                    <MenuButton onClick={onClose} variant="secondary" className="w-full" ariaLabel="Close">Close</MenuButton>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 // --- Main Dashboard Component ---
 const UserDashboard = ({ setToken }) => {
@@ -259,14 +403,16 @@ const UserDashboard = ({ setToken }) => {
   const [filterType, setFilterType] = useState('');
   const [showNutritionPopup, setShowNutritionPopup] = useState(false);
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
- 
-
-
-
-  // ✨ NEW: State for live tracking
+  // ✨ NEW: State for live tracking and feedback
   const [trackingOrder, setTrackingOrder] = useState(null);
-  const [showLiveTracker,] = useState(false);
+  const [showLiveTracker, setShowLiveTracker] = useState(false); // Changed to true when tracking starts
   const trackingIntervalRef = useRef(null);
+  const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+  const [feedbackOrder, setFeedbackOrder] = useState(null);
+  // ✨ NEW: State for order details popup
+  const [showOrderDetailsPopup, setShowOrderDetailsPopup] = useState(false);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+
 
   // --- API Calls and Logic ---
   useEffect(() => {
@@ -283,7 +429,7 @@ const UserDashboard = ({ setToken }) => {
       } catch (error) {
         console.error('Error fetching varieties:', error);
         setVeggies(['Onion', 'Tomato', 'Capsicum', 'Mushroom', 'Spinach', 'Bell Peppers', 'Black Olives', 'Jalapenos', 'Sweet Corn', 'Cherry Tomatoes']);
-        alert('Failed to load pizza options. Using default options.');
+        // alert('Failed to load pizza options. Using default options.'); // Removed alert for better UX
       } finally {
         setIsLoading(false);
       }
@@ -298,7 +444,7 @@ const UserDashboard = ({ setToken }) => {
         setAddress(res.data.address || { name: '', phone: '', street: '', city: '', pincode: '' });
       } catch (err) {
         console.error('Failed to fetch user profile:', err);
-        alert('Failed to load profile. Please try again.');
+        // alert('Failed to load profile. Please try again.'); // Removed alert for better UX
       } finally {
         setIsLoading(false);
       }
@@ -313,12 +459,12 @@ const UserDashboard = ({ setToken }) => {
       } catch (error) {
         console.error('Error fetching cart:', error);
         if (error.response?.status === 401) {
-          alert("Session expired. Please login again.");
+          // alert("Session expired. Please login again."); // Removed alert for better UX
           localStorage.removeItem("token");
           localStorage.removeItem("userEmail");
           navigate("/login");
         } else {
-          alert("Failed to load cart. Please try again.");
+          // alert("Failed to load cart. Please try again."); // Removed alert for better UX
         }
       } finally {
         setIsLoading(false);
@@ -330,22 +476,22 @@ const UserDashboard = ({ setToken }) => {
   }, [navigate]);
 
 
-
-
   // ✨ NEW: useEffect for tracking
   useEffect(() => {
-    if (step === 8 && trackingOrder) {
-      // Har 5 second mein order status fetch karein
+    // Agar trackingOrder set hai aur status Delivered nahi hai, tabhi interval shuru karein
+    if (trackingOrder && trackingOrder.status !== 'Delivered') {
+      setShowLiveTracker(true); // LiveTracker dikhana shuru karein
       trackingIntervalRef.current = setInterval(() => {
         fetchOrderStatus(trackingOrder.order_id);
-      }, 5000);
+      }, 5000); // Har 5 second mein status update karein
     } else {
-      // Jab component unmount ho ya step change ho to interval clear karein
-      clearInterval(trackingIntervalRef.current);
+      clearInterval(trackingIntervalRef.current); // Interval clear karein
+      setShowLiveTracker(false); // LiveTracker hide karein
     }
 
+    // Cleanup function: component unmount hone par interval clear karein
     return () => clearInterval(trackingIntervalRef.current);
-  }, [step, trackingOrder]);
+  }, [trackingOrder]); // trackingOrder change hone par effect re-run karein
 
 
   const fetchOrders = async () => {
@@ -372,10 +518,12 @@ const UserDashboard = ({ setToken }) => {
       setTrackingOrder(response.data); // Update tracking order state
       if (response.data.status === 'Delivered') {
         clearInterval(trackingIntervalRef.current); // Stop polling once delivered
+        setShowLiveTracker(false); // Hide tracker
       }
     } catch (error) {
       console.error('Error fetching order status:', error);
       clearInterval(trackingIntervalRef.current); // Stop on error
+      setShowLiveTracker(false); // Hide tracker on error
     }
   };
 
@@ -403,6 +551,7 @@ const UserDashboard = ({ setToken }) => {
             );
             
             setTrackingOrder(res.data.order); // Set the order for tracking
+            setShowLiveTracker(true); // Show live tracker
             if (cartCheckout) { await handleClearCart(); }
             setStep(8); // Go to tracking screen
             
@@ -421,6 +570,73 @@ const UserDashboard = ({ setToken }) => {
   const handleTrackOrder = (order) => {
     setTrackingOrder(order);
     setStep(8);
+  };
+
+  // ✨ NEW: Handler for submitting feedback
+  const handleSubmitFeedback = async (orderId, rating, comment) => {
+    const token = localStorage.getItem('token');
+    if (!token) { alert('Please log in to submit feedback.'); return; }
+    setIsLoading(true);
+    try {
+      await axios.post(
+        `https://pizzamania-0igb.onrender.com/api/orders/${orderId}/feedback`,
+        { rating, comment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Feedback submitted successfully!');
+      // Update the order in the local state to reflect feedback given
+      setOrders(prevOrders => prevOrders.map(order => 
+        order.order_id === orderId ? { ...order, feedback: { rating, comment } } : order
+      ));
+      setShowFeedbackPopup(false);
+      setFeedbackOrder(null);
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert('Failed to submit feedback. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ✨ NEW: Handler to show feedback popup
+  const handleShowFeedback = (order) => {
+    setFeedbackOrder(order);
+    setShowFeedbackPopup(true);
+  };
+
+  // ✨ NEW: Handler to show order details popup
+  const handleShowOrderDetails = (order) => {
+    setSelectedOrderDetails(order);
+    setShowOrderDetailsPopup(true);
+  };
+
+  // ✨ NEW: Handler to cancel an order
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+      return;
+    }
+    const token = localStorage.getItem('token');
+    if (!token) { alert('Please log in to cancel orders.'); return; }
+    setIsLoading(true);
+    try {
+      await axios.post(
+        `https://pizzamania-0igb.onrender.com/api/orders/${orderId}/cancel`,
+        {}, // No body needed for a simple cancel
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Order cancelled successfully!');
+      // Update the order status in the local state
+      setOrders(prevOrders => prevOrders.map(order => 
+        order.order_id === orderId ? { ...order, status: 'Cancelled' } : order
+      ));
+      setShowOrderDetailsPopup(false); // Close popup after cancellation
+      setSelectedOrderDetails(null);
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert('Failed to cancel order. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   // ... (Baaki saare functions jaise saveAddress, handleAddToCart, etc. waise hi rahenge)
@@ -582,7 +798,9 @@ const UserDashboard = ({ setToken }) => {
 
   const toggleTheme = () => { setTheme(theme === 'light' ? 'dark' : 'light'); };
   const handleSearchChange = (e) => { setSearchQuery(e.target.value); };
+  const handleClearSearch = () => { setSearchQuery(''); }; // ✨ NEW: Clear search
   const handleViewCart = () => { setStep(7); };
+  const handleClearOrderSearch = () => { setOrderSearchQuery(''); }; // ✨ NEW: Clear order search
 
   const filteredPizzas = pizzaMenu
     .filter((pizza) => pizza.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -613,7 +831,7 @@ const UserDashboard = ({ setToken }) => {
 
   return (
     <div className={`min-h-screen w-full flex font-sans ${theme === 'dark' ? 'bg-gray-900 text-gray-200' : 'bg-gray-50 text-gray-900'}`}>
-      {/* ... (Sidebar aur Header ka JSX code waise hi rahega) ... */}
+      {/* Sidebar */}
        <aside className={`fixed top-0 left-0 h-full shadow-xl z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-64 p-4 flex flex-col ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
                 <div className="flex items-center gap-3 px-2 mb-8">
                     <img src={pizzaLogo} alt="Pizza Mania Logo" className="w-10 h-10" />
@@ -621,10 +839,10 @@ const UserDashboard = ({ setToken }) => {
                 </div>
                 <nav className="flex-grow space-y-2">
                     {[
-                        { label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3', onClick: () => { setStep(0); setIsSidebarOpen(false); setSearchQuery(''); } },
-                        { label: 'My Orders', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', onClick: () => { fetchOrders(); setIsSidebarOpen(false); } },
-                        { label: 'Cart', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', onClick: () => { setStep(7); setIsSidebarOpen(false); } },
-                        { label: 'My Address', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', onClick: () => { setStep(6); setIsSidebarOpen(false); } },
+                        { label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3', onClick: () => { setStep(0); setIsSidebarOpen(false); setSearchQuery(''); setShowLiveTracker(false); setTrackingOrder(null); } },
+                        { label: 'My Orders', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', onClick: () => { fetchOrders(); setIsSidebarOpen(false); setShowLiveTracker(false); setTrackingOrder(null); } },
+                        { label: 'Cart', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', onClick: () => { setStep(7); setIsSidebarOpen(false); setShowLiveTracker(false); setTrackingOrder(null); } },
+                        { label: 'My Address', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', onClick: () => { setStep(6); setIsSidebarOpen(false); setShowLiveTracker(false); setTrackingOrder(null); } },
                     ].map(({ label, icon, onClick }) => (
                         <button key={label} className={`flex items-center gap-3 w-full text-left px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`} onClick={onClick}>
                             <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={icon} /></svg>
@@ -640,24 +858,36 @@ const UserDashboard = ({ setToken }) => {
                 </div>
             </aside>
             
+            {/* Sidebar Overlay */}
             {isSidebarOpen && <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setIsSidebarOpen(false)}></div>}
 
             <main className="w-full flex-1 flex flex-col">
+                {/* Header */}
                 <header className={`sticky top-0 z-30 flex items-center justify-between p-4 border-b ${theme === 'dark' ? 'bg-gray-900/80 border-gray-700 backdrop-blur-sm' : 'bg-gray-50/80 border-gray-200 backdrop-blur-sm'}`}>
                     <div className="flex items-center gap-2">
+                        {/* Mobile menu toggle */}
                         <button className={`p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`} onClick={() => setIsSidebarOpen(true)} aria-label="Open sidebar">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                         </button>
+                        {/* Search input (hidden on small screens, shown on sm and up) */}
                         <div className="relative hidden sm:block">
                             <svg className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 111.65-1.65z" /></svg>
                             <input type="text" placeholder="Search Pizzas..." value={searchQuery} onChange={handleSearchChange} className={`w-64 pl-10 p-2 rounded-lg border-2 focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all duration-300 text-sm ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-200'}`} aria-label="Search pizzas" />
+                            {searchQuery && ( // ✨ NEW: Clear search button
+                                <button onClick={handleClearSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
+                        {/* Theme toggle */}
                         <button onClick={toggleTheme} className="p-2 rounded-full transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
                              <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={theme === 'light' ? 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' : 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'} /></svg>
                         </button>
+                        {/* Cart Summary */}
                         <CartSummary cart={cart} onViewCart={handleViewCart} theme={theme} />
+                        {/* User Profile / Edit Profile */}
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setEditMode(true)}>
                             <img src={userProfile.photo} alt="User profile" className="w-10 h-10 rounded-full border-2 border-teal-500 shadow-sm" />
                             <div className="hidden md:block"><p className={`font-semibold text-sm truncate ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{userProfile.name}</p><p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Edit Profile</p></div>
@@ -671,48 +901,41 @@ const UserDashboard = ({ setToken }) => {
 
         {/* Home Screen (Step 0) */}
         {!isLoading && step === 0 && (
-          // ... (Step 0 ka JSX code waise hi rahega)
            <div className="animate-fade-in">
-             {/* ✅ Yeh part add karna hai */}
-    
+             {/* Live tracker rendering block (only if required) */}
+            {showLiveTracker && trackingOrder && trackingOrder.status !== 'Delivered' && (
+              <div className="mb-8">
+                <LiveTracker order={trackingOrder} theme={theme} />
+              </div>
+            )}
 
-{/* 
-// ✅ Live tracker rendering block (only if required) */}
-{showLiveTracker && trackingOrder && trackingOrder.status !== 'Delivered' && (
-  <div className="mb-8">
-    <LiveTracker order={trackingOrder} theme={theme} />
-  </div>
-)}
-
-
-                            <div className="mb-8 rounded-xl overflow-hidden" style={{backgroundImage: `url(${pizzaBg})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
-                                <div className={`p-8 md:p-16 text-center ${theme === 'dark' ? 'bg-black/70' : 'bg-black/50'}`}>
-                                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">Taste the Perfection</h2>
-                                    <p className="text-lg text-gray-200">Freshly baked pizzas, delivered right to your door.</p>
-                                </div>
-                            </div>
-                            
-                            <div className={`flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-xl ${theme === 'dark' ? 'bg-gray-800' : 'bg-white shadow-sm'}`}>
-                                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{searchQuery ? `Results for "${searchQuery}"` : "Our Bestsellers"}</h3>
-                                <div className="flex items-center gap-4">
-                                    <SelectInput value={filterType} onChange={(e) => setFilterType(e.target.value)} options={['veg', 'non-veg']} placeholder="Filter by Type" id="filter-type-select" theme={theme} />
-                                    <SelectInput value={sortBy} onChange={(e) => setSortBy(e.target.value)} options={['rating', 'price-asc', 'price-desc']} placeholder="Sort by" id="sort-by-select" theme={theme} />
-                                </div>
-                            </div>
-                            
-                            {filteredPizzas.length === 0 ? (
-                                <div className="text-center py-16"><p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>No pizzas found. Try a different search!</p></div>
-                            ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {filteredPizzas.map((pizza, index) => (<PizzaCard key={index} pizza={pizza} onOrder={handleDirectOrder} onCustomize={handleCustomize} onAddToCart={handleAddToCartPopup} onShowNutrition={(p) => { setSelectedPizza(p); setShowNutritionPopup(true); }} theme={theme} />))}
-                                </div>
-                            )}
-                        </div>
+            <div className="mb-8 rounded-xl overflow-hidden" style={{backgroundImage: `url(${pizzaBg})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+                <div className={`p-8 md:p-16 text-center ${theme === 'dark' ? 'bg-black/70' : 'bg-black/50'}`}>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">Taste the Perfection</h2>
+                    <p className="text-lg text-gray-200">Freshly baked pizzas, delivered right to your door.</p>
+                </div>
+            </div>
+            
+            <div className={`flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-xl ${theme === 'dark' ? 'bg-gray-800' : 'bg-white shadow-sm'}`}>
+                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{searchQuery ? `Results for "${searchQuery}"` : "Our Bestsellers"}</h3>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto"> {/* Added flex-col for mobile */}
+                    <SelectInput value={filterType} onChange={(e) => setFilterType(e.target.value)} options={['veg', 'non-veg']} placeholder="Filter by Type" id="filter-type-select" theme={theme} />
+                    <SelectInput value={sortBy} onChange={(e) => setSortBy(e.target.value)} options={['rating', 'price-asc', 'price-desc']} placeholder="Sort by" id="sort-by-select" theme={theme} />
+                </div>
+            </div>
+            
+            {filteredPizzas.length === 0 ? (
+                <div className="text-center py-16"><p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>No pizzas found. Try a different search!</p></div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredPizzas.map((pizza, index) => (<PizzaCard key={index} pizza={pizza} onOrder={handleDirectOrder} onCustomize={handleCustomize} onAddToCart={handleAddToCartPopup} onShowNutrition={(p) => { setSelectedPizza(p); setShowNutritionPopup(true); }} theme={theme} />))}
+                </div>
+            )}
+        </div>
         )}
 
         {/* Steps 1, 2, 3, 6 (Customization, Address, etc.) */}
         {!isLoading && (step === 1 || step === 2 || step === 3 || step === 6) && (
-          // ... (In steps ka JSX code waise hi rahega)
            <div className={`max-w-2xl mx-auto p-6 rounded-xl shadow-lg animate-slide-up ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
                             {step === 1 && (
                                 <div className="space-y-6">
@@ -734,7 +957,7 @@ const UserDashboard = ({ setToken }) => {
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex justify-between items-center flex-wrap gap-4"> {/* Added flex-wrap for mobile */}
                                         <div>
                                             <label className={`block text-sm font-medium mb-1`}>Quantity</label>
                                             <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value === '' ? 1 : Number(e.target.value))} className={`w-24 p-2 rounded-lg border-2 focus:ring-2 focus:ring-teal-400 focus:border-teal-400 ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`} aria-label="Select quantity" />
@@ -744,7 +967,7 @@ const UserDashboard = ({ setToken }) => {
                                             <p className="text-teal-500 font-bold text-3xl">₹{totalPrice.toFixed(2)}</p>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <div className="flex justify-between gap-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex-wrap"> {/* Added flex-wrap for mobile */}
                                         <MenuButton onClick={() => setStep(0)} variant="secondary" ariaLabel="Go back to menu">Back to Menu</MenuButton>
                                         <MenuButton onClick={() => { if (validateCustomization()) setStep(2); }} ariaLabel="Proceed to address step">Next: Address</MenuButton>
                                     </div>
@@ -761,7 +984,7 @@ const UserDashboard = ({ setToken }) => {
                                         <AddressInput name='city' value={address.city} onChange={handleAddressChange} placeholder='City' id='address-city' theme={theme} />
                                         <AddressInput name='pincode' value={address.pincode} onChange={handleAddressChange} placeholder='Pincode' id='address-pincode' theme={theme} />
                                     </div>
-                                    <div className="flex justify-between gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <div className="flex justify-between gap-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex-wrap"> {/* Added flex-wrap for mobile */}
                                         <MenuButton onClick={() => setStep(isDirectOrder || cartCheckout ? 0 : 1)} variant="secondary" ariaLabel="Go back to previous step">Back</MenuButton>
                                         <MenuButton onClick={() => { if (validateAddress()) setStep(3); }} ariaLabel="Proceed to confirm order">Next: Confirm Order</MenuButton>
                                     </div>
@@ -776,7 +999,7 @@ const UserDashboard = ({ setToken }) => {
                                             <div className="space-y-3">
                                                 <h4 className={`text-lg font-semibold`}>Cart Items</h4>
                                                 {cart.map((item, index) => (
-                                                    <div key={index} className={`flex justify-between items-center text-sm`}>
+                                                    <div key={index} className={`flex justify-between items-center text-sm flex-wrap`}> {/* Added flex-wrap */}
                                                         <span><strong>{item.pizzaName}</strong> ({item.size}, Qty: {item.quantity})</span>
                                                         <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                                                     </div>
@@ -795,12 +1018,12 @@ const UserDashboard = ({ setToken }) => {
                                             <p>{address.name}, {address.phone}</p>
                                             <p>{address.street}, {address.city}, {address.pincode}</p>
                                         </div>
-                                         <div className="mt-4 pt-4 border-t flex justify-between items-center border-gray-200 dark:border-gray-700">
+                                         <div className="mt-4 pt-4 border-t flex justify-between items-center border-gray-200 dark:border-gray-700 flex-wrap gap-2"> {/* Added flex-wrap */}
                                             <p className={`text-lg font-bold`}>Total Amount</p>
                                             <p className="text-teal-500 font-bold text-2xl">₹{totalPrice.toFixed(2)}</p>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between gap-4">
+                                    <div className="flex justify-between gap-4 flex-wrap"> {/* Added flex-wrap for mobile */}
                                         <MenuButton onClick={() => setStep(2)} variant="secondary" ariaLabel="Go back to address step">Back</MenuButton>
                                         <MenuButton onClick={handlePayment} disabled={isLoading} ariaLabel="Proceed to payment">{isLoading ? 'Processing...' : 'Proceed to Pay'}</MenuButton>
                                     </div>
@@ -817,7 +1040,7 @@ const UserDashboard = ({ setToken }) => {
                                         <AddressInput name='city' value={address.city} onChange={handleAddressChange} placeholder='City' id='address-city' theme={theme} />
                                         <AddressInput name='pincode' value={address.pincode} onChange={handleAddressChange} placeholder='Pincode' id='address-pincode' theme={theme} />
                                     </div>
-                                    <div className="flex justify-between gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <div className="flex justify-between gap-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex-wrap"> {/* Added flex-wrap for mobile */}
                                         <MenuButton onClick={() => setStep(0)} variant="secondary" ariaLabel="Back to menu">Back</MenuButton>
                                         <MenuButton onClick={saveAddress} disabled={isLoading} ariaLabel="Save address">{isLoading ? 'Saving...' : 'Save Address'}</MenuButton>
                                     </div>
@@ -831,10 +1054,15 @@ const UserDashboard = ({ setToken }) => {
           <div className="space-y-6 animate-slide-up">
             <div className={`flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-xl ${theme === 'dark' ? 'bg-gray-800' : 'bg-white shadow-sm'}`}>
                 <h3 className={`text-2xl font-bold`}>My Orders</h3>
-                {/* ... search input ... */}
-                 <div className="relative">
+                {/* Search input for orders */}
+                 <div className="relative w-full sm:w-auto"> {/* Added w-full for mobile */}
                     <svg className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 111.65-1.65z" /></svg>
-                    <input type="text" placeholder="Search in orders..." value={orderSearchQuery} onChange={(e) => setOrderSearchQuery(e.target.value)} className={`w-64 pl-10 p-2 rounded-lg border-2 focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all duration-300 text-sm ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-200 text-gray-900 border-gray-300'}`} aria-label="Search past orders" />
+                    <input type="text" placeholder="Search in orders..." value={orderSearchQuery} onChange={(e) => setOrderSearchQuery(e.target.value)} className={`w-full sm:w-64 pl-10 p-2 rounded-lg border-2 focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all duration-300 text-sm ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-200 text-gray-900 border-gray-300'}`} aria-label="Search past orders" />
+                    {orderSearchQuery && ( // ✨ NEW: Clear order search button
+                        <button onClick={handleClearOrderSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    )}
                 </div>
             </div>
             {filteredOrders.length === 0 ? (
@@ -844,11 +1072,11 @@ const UserDashboard = ({ setToken }) => {
               </div>
             ) : (
               <div className={`rounded-xl shadow-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto"> {/* Ensures horizontal scroll for table on small screens */}
                       <table className="w-full text-left table-auto">
                           <thead className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
                               <tr className={`font-semibold text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                                  <th className="p-4">Order ID</th><th className="p-4">Pizza</th><th className="p-4">Details</th><th className="p-4">Total</th><th className="p-4">Status</th><th className="p-4"></th>
+                                  <th className="p-4">Order ID</th><th className="p-4">Pizza</th><th className="p-4">Details</th><th className="p-4">Total</th><th className="p-4">Status</th><th className="p-4">Actions</th>
                               </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -861,30 +1089,31 @@ const UserDashboard = ({ setToken }) => {
                                       <td className="p-4">
                                           <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${order.status === 'Pending' || order.status === 'Preparing' ? (theme === 'dark' ? 'bg-yellow-900 text-yellow-300' : 'bg-yellow-100 text-yellow-800') : order.status === 'Out for Delivery' ? (theme === 'dark' ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800') : (theme === 'dark' ? 'bg-teal-900 text-teal-300' : 'bg-teal-100 text-teal-800')}`}>{order.status}</span>
                                       </td>
-                                      <td className="p-4 flex gap-2">
+                                      <td className="p-4 flex gap-2 flex-wrap"> {/* Added flex-wrap for buttons */}
+                                        <MenuButton onClick={() => handleShowOrderDetails(order)} variant="ghost" className="text-xs !px-3 !py-1" ariaLabel={`View details for ${order.order_id}`}>View Details</MenuButton> {/* ✨ NEW: View Details Button */}
                                         <MenuButton onClick={() => handleReorder(order)} variant="ghost" className="text-xs !px-3 !py-1" ariaLabel={`Reorder ${order.order_id}`}>Reorder</MenuButton>
-                                        {/* ✨ TRACK BUTTON YAHAN HAI */}
+                                        {/* ✨ TRACK BUTTON */}
                                         {(order.status === 'Preparing' || order.status === 'Out for Delivery') && (
-  <MenuButton
-    onClick={() => handleTrackOrder(order)}
-    variant="primary"
-    className="text-xs !px-3 !py-1"
-    ariaLabel={`Track ${order.order_id}`}
-  >
-    Track
-  </MenuButton>
-)}
-
-{order.status === 'Delivered' && !order.feedback && (
-  <MenuButton
-    onClick={() => handleTrackOrder(order)}
-    variant="secondary"
-    className="text-xs !px-3 !py-1"
-    ariaLabel={`Feedback for ${order.order_id}`}
-  >
-    Give Feedback
-  </MenuButton>
-)}
+                                            <MenuButton
+                                                onClick={() => handleTrackOrder(order)}
+                                                variant="primary"
+                                                className="text-xs !px-3 !py-1"
+                                                ariaLabel={`Track ${order.order_id}`}
+                                            >
+                                                Track
+                                            </MenuButton>
+                                        )}
+                                        {/* ✨ FEEDBACK BUTTON */}
+                                        {order.status === 'Delivered' && !order.feedback && (
+                                            <MenuButton
+                                                onClick={() => handleShowFeedback(order)}
+                                                variant="secondary"
+                                                className="text-xs !px-3 !py-1"
+                                                ariaLabel={`Feedback for ${order.order_id}`}
+                                            >
+                                                Give Feedback
+                                            </MenuButton>
+                                        )}
                                       </td>
                                   </tr>
                               ))}
@@ -899,7 +1128,6 @@ const UserDashboard = ({ setToken }) => {
 
         {/* Cart (Step 7) */}
         {!isLoading && step === 7 && (
-          // ... (Step 7 ka JSX code waise hi rahega)
            <div className="space-y-6 animate-slide-up">
                             <h3 className={`text-2xl font-bold`}>Your Cart</h3>
                              {cart.length === 0 ? (
@@ -909,7 +1137,7 @@ const UserDashboard = ({ setToken }) => {
                                 </div>
                             ) : (
                                 <div className={`rounded-xl shadow-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-                                    <div className="overflow-x-auto">
+                                    <div className="overflow-x-auto"> {/* Ensures horizontal scroll for table on small screens */}
                                         <table className="w-full text-left table-auto">
                                             <thead className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
                                                 <tr className={`font-semibold text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -939,7 +1167,7 @@ const UserDashboard = ({ setToken }) => {
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div className={`p-4 flex justify-between items-center border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                                    <div className={`p-4 flex justify-between items-center border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} flex-wrap gap-2`}> {/* Added flex-wrap */}
                                         <MenuButton onClick={handleClearCart} variant="danger" ariaLabel="Clear cart">Clear Cart</MenuButton>
                                         <div className="text-right">
                                             <p className={`text-lg font-bold`}>Subtotal: ₹{cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</p>
@@ -948,7 +1176,7 @@ const UserDashboard = ({ setToken }) => {
                                     </div>
                                 </div>
                             )}
-                            <div className="flex justify-between gap-4 mt-6">
+                            <div className="flex justify-between gap-4 mt-6 flex-wrap"> {/* Added flex-wrap */}
                                 <MenuButton onClick={() => setStep(0)} variant="secondary" ariaLabel="Back to menu">Continue Shopping</MenuButton>
                                 {cart.length > 0 && <MenuButton onClick={() => { setCartCheckout(true); setStep(2); }} ariaLabel="Proceed to checkout">Proceed to Checkout</MenuButton>}
                             </div>
@@ -956,7 +1184,7 @@ const UserDashboard = ({ setToken }) => {
         )}
         
         {/* ✨ NEW: Live Tracking Screen (Step 8) */}
-        {!isLoading && step === 8 && (
+        {!isLoading && step === 8 && trackingOrder && (
             <div className="animate-fade-in">
                 <LiveTracker order={trackingOrder} theme={theme} />
                 <div className="text-center mt-6">
@@ -980,6 +1208,24 @@ const UserDashboard = ({ setToken }) => {
       )}
       {showAddToCartPopup && selectedPizza && <AddToCartPopup pizza={selectedPizza} onConfirm={handleAddToCart} onCancel={() => { setShowAddToCartPopup(false); setSelectedPizza(null); }} theme={theme} />}
       {showNutritionPopup && selectedPizza && <NutritionInfoPopup pizza={selectedPizza} onClose={() => { setShowNutritionPopup(false); setSelectedPizza(null); }} theme={theme} />}
+      {/* ✨ NEW: Feedback Popup */}
+      {showFeedbackPopup && feedbackOrder && (
+        <FeedbackPopup
+          order={feedbackOrder}
+          onClose={() => { setShowFeedbackPopup(false); setFeedbackOrder(null); }}
+          onSubmit={handleSubmitFeedback}
+          theme={theme}
+        />
+      )}
+      {/* ✨ NEW: Order Details Popup */}
+      {showOrderDetailsPopup && selectedOrderDetails && (
+        <OrderDetailsPopup
+          order={selectedOrderDetails}
+          onClose={() => { setShowOrderDetailsPopup(false); setSelectedOrderDetails(null); }}
+          onCancelOrder={handleCancelOrder}
+          theme={theme}
+        />
+      )}
     </main>
     
     <style>{`
