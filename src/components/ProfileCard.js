@@ -50,6 +50,24 @@ const ProfileCard = ({ name: initialName, photo: initialPhoto, email, onUpdate, 
     }
   };
 
+  const renderAvatar = () => {
+    if (preview) {
+      return (
+        <img
+          src={preview}
+          alt="Profile"
+          className="w-20 h-20 rounded-full object-cover border-2 border-teal-400"
+        />
+      );
+    } else {
+      return (
+        <div className="w-20 h-20 rounded-full bg-teal-500 text-white flex items-center justify-center text-2xl font-bold">
+          {name ? name[0].toUpperCase() : 'U'}
+        </div>
+      );
+    }
+  };
+
   return (
     <div className={`p-6 rounded-lg shadow-md w-full max-w-md mx-auto mb-6 transition-all duration-300
       ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
@@ -57,11 +75,7 @@ const ProfileCard = ({ name: initialName, photo: initialPhoto, email, onUpdate, 
       <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-teal-400' : 'text-red-600'}`}>👤 Your Profile</h2>
       
       <div className="flex items-center gap-4 mb-4">
-        <img
-          src={preview || `${backendURL}/uploads/default-user.png`}
-          alt="Profile"
-          className="w-20 h-20 rounded-full object-cover border-2 border-teal-400"
-        />
+        {renderAvatar()}
         <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm" />
       </div>
       
