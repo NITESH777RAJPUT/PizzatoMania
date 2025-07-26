@@ -5,19 +5,13 @@ const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://pizzamania-0igb
 
 const ProfileCard = ({ name: initialName, photo: initialPhoto, email, onUpdate, theme }) => {
   const [name, setName] = useState(initialName || '');
-  const [photo, setPhoto] = useState('');
-  const [preview, setPreview] = useState('');
+  const [photo, setPhoto] = useState(initialPhoto || '');
+  const [preview, setPreview] = useState(initialPhoto || '');
 
   useEffect(() => {
     setName(initialName || '');
     setPhoto(initialPhoto || '');
-
-    // ✅ If photo exists, show preview image
-    if (initialPhoto) {
-      setPreview(`${backendURL}/uploads/${initialPhoto}`);
-    } else {
-      setPreview(''); // Clear preview so fallback letter works
-    }
+    setPreview(initialPhoto || '');
   }, [initialName, initialPhoto]);
 
   const handleImageChange = async (e) => {
@@ -32,9 +26,9 @@ const ProfileCard = ({ name: initialName, photo: initialPhoto, email, onUpdate, 
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      const uploadedPhoto = res.data.filename || res.data.url;
-      setPhoto(uploadedPhoto);
-      setPreview(`${backendURL}/uploads/${uploadedPhoto}`);
+      const cloudinaryURL = res.data.imageUrl || res.data.url || '';
+      setPhoto(cloudinaryURL);
+      setPreview(cloudinaryURL);
     } catch (err) {
       console.error('Upload error:', err);
       alert('Photo upload failed');
@@ -77,7 +71,7 @@ const ProfileCard = ({ name: initialName, photo: initialPhoto, email, onUpdate, 
     <div className={`p-6 rounded-lg shadow-md w-full max-w-md mx-auto mb-6 transition-all duration-300
       ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
 
-      <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-teal-400' : 'text-red-600'}`}>👤 Your Profile</h2>
+      <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-teal-400' : 'text-red-600'}`}>Your Profile</h2>
 
       <div className="flex items-center gap-4 mb-4">
         {renderAvatar()}
